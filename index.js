@@ -10,6 +10,10 @@ import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 
+//data imports
+import User from "./models/User.js";
+import {dataUser} from "./data/index.js";
+
 
 //Configuration
 dotenv.config();
@@ -28,20 +32,14 @@ app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales",salesRoutes);
 
-/*Mongoose Setup
-const PORT = process.env.PORT || 9000;
-mongoose.connect(process.env.MONGO_URL,{
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}).then(()=>{
-    app.listen(PORT,()=>console.log(`Server Port:${PORT}`))
-}).catch((error)=> console.log(`${error} did not connect`))*/
+
 
 //CONNEXION mongoDB
 mongoose
   .connect(process.env.MONGO_URL || 9000)
   .then(() => {
     console.log("Connected to MongoDB");
+    User.updateMany(dataUser);
   })
   .catch((error) => {
     console.log(error);
