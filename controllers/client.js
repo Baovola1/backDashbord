@@ -43,7 +43,7 @@ export const getTransactions = async (req, res)=>{
         const generateSort =()=>{
             const sortParsed = JSON.parse(sort);
             const sortFormatted = {
-                [sortParsed.field]:sortParsed.sort = "asc" ? 1 : -1
+                [sortParsed.field]:sortParsed.sort === "asc" ? 1 : -1
             };
             return sortFormatted;
         }
@@ -62,7 +62,7 @@ export const getTransactions = async (req, res)=>{
             name : {$regex: search, $options: "i"}
         });
 
-        res.status(200).json(transactions, total);
+        res.status(200).json({transactions, total});
         
     } catch (error) {
         res.status(400).json({message: error.message});
