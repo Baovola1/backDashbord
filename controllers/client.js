@@ -34,37 +34,47 @@ export const getCustomers = async(req, res)=>{
     }
 }
 
-export const getTransactions = async (req, res)=>{
+export const getTransactions = async (req, res) => {
     try {
-        //sort should look like this : {"field":"userId", "sort":"desc"}
-        const {page = 1, pageSize = 20, sort = null, search = " "} = req.query;
+        const { page = 1, pageSize = 20, sort = "{}", search = "" } = req.query;
+        const pageNumber = parseInt(page);
+        const pageSizeNumber = parseInt(pageSize);
 
-        //formatted sort should look like {userId: -1}
-        const generateSort =()=>{
-            const sortParsed = JSON.parse(sort);
-            const sortFormatted = {
-                [sortParsed.field]:sortParsed.sort === "asc" ? 1 : -1
-            };
-            return sortFormatted;
-        }
-        const sortFormatted = Boolean(sort) ? generateSort() : {}
-        const transactions = await Transaction.find({
-            $or:[
-                {cost: {$regex: new RegExp(search, "i")}},
-                {userId: {$regex: new RegExp(search, "i")}},  
-        ],
-        })
-        .sort(sortFormatted)
-        .skip(page * pageSize)
-        .limit(pageSize);
+        // Fonction pour générer le tri
+        const generateSort = () => {
+            try {
+                const sortParsed = JSON.parse(sort);
+                return {
+                    [sortParsed.field]: sortParsed.sort === "asc" ? 1 : -1
+                };
+            } catch {
+                return {}; // En cas d'erreur de parsing, retourne un objet vide
+            }
+        };
 
-        const total = await Transaction.countDocuments({
-            name : {$regex: search, $options: "i"}
-        });
+        // Vérifier si sort n'est pas vide et générer le sort si nécessaire
+        const sortFormatted = sort !== "{}" ? generateSort() : {};
 
-        res.status(200).json({transactions, total});
+        // Appliquer la même recherche pour le comptage et la récupération des données
+        const searchCriteria = {
+            $or: [
+                { cost: { $regex: new RegExp(search, "i") } },
+                { userId: { $regex: new RegExp(search, "i") } },
+            ],
+        };
+
+        // Trouver les transactions avec les critères de recherche
+        const transactions = await Transaction.find(searchCriteria)
+            .sort(sortFormatted)
+            .skip((pageNumber - 1) * pageSizeNumber) 
+            .limit(pageSizeNumber);
+
+        // Compter le nombre total de documents qui correspondent à la recherche
+        const total = await Transaction.countDocuments(searchCriteria);
+
+        res.status(200).json({ transactions, total });
         
     } catch (error) {
-        res.status(400).json({message: error.message});
+        res.status(400).json({ message: error.message });
     }
-    }
+};
