@@ -16,7 +16,8 @@ import Product from "./models/Product.js";
 import ProductStat from "./models/ProductStat.js";
 import Transaction from "./models/Transaction.js";
 import OverallStat from "./models/OverallStat.js";
-import {dataUser,dataProduct, dataProductStat, dataTransaction, dataOverallStat} from "./data/index.js";
+import AffiliateStat from "./models/AffiliateStat.js";
+import {dataUser,dataProduct, dataProductStat, dataTransaction, dataOverallStat, dataAffiliateStat} from "./data/index.js";
 
 
 //Configuration
@@ -43,6 +44,7 @@ mongoose
   .connect(process.env.MONGO_URL || 9000)
   .then(() => {
     console.log("Connected to MongoDB");
+    //AffiliateStat.insertMany(dataAffiliateStat);
    // OverallStat.updateMany(dataOverallStat);
     //Transaction.updateMany(dataTransaction);
     //Product.updateMany(dataProduct);
