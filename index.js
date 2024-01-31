@@ -9,6 +9,8 @@ import clientRoutes from "./routes/client.js";
 import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
+//Deploy
+import path from "path";
 
 //data imports
 import User from "./models/User.js";
@@ -23,6 +25,9 @@ import {dataUser,dataProduct, dataProductStat, dataTransaction, dataOverallStat,
 //Configuration
 dotenv.config();
 const app = express();
+//Deploy
+const __dirname = path.resolve();
+
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({policy:"cross-origin"}));
@@ -37,7 +42,12 @@ app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales",salesRoutes);
 
+//Deploy
+app.use(express.static(path.join(__dirname,'./client/dist')));
 
+app.get('*',(req,res)=>{
+  res.sendFile(path.join(__dirname, "client","dist","index.html"));
+})
 
 //CONNEXION mongoDB
 mongoose
@@ -58,3 +68,5 @@ mongoose
   app.listen(3000, () => {
     console.log("Server is running on port 3000 !!");
   });
+
+  
