@@ -25,8 +25,8 @@ import {dataUser,dataProduct, dataProductStat, dataTransaction, dataOverallStat,
 //Configuration
 dotenv.config();
 const app = express();
-//Deploy
-const __dirname = path.resolve();
+/*Deploy
+const __dirname = path.resolve();*/
 
 app.use(express.json());
 app.use(helmet());
@@ -42,14 +42,14 @@ app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales",salesRoutes);
 
-//Deploy
+/*Deploy
 const clientPath = path.join(__dirname, '../client/dist');
 
 app.use(express.static(clientPath));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(clientPath, 'index.html'));
-});
+});*/
 
 //CONNEXION mongoDB
 mongoose
